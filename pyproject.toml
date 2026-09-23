@@ -1,0 +1,27 @@
+[project]
+name = "sales-copilot"
+version = "0.1.0"
+description = "Live sales-call copilot: closing probability, signals and coaching from TypeSafe Jev (System One)"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.141.1",
+    "httpx>=0.28.1",
+    "pyyaml>=6.0.3",
+    "typesafe-sdk>=0.6.0",
+    "uvicorn[standard]>=0.53.0",
+    "websockets>=17.1",
+]
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+addopts = "-ra"
+pythonpath = ["."]

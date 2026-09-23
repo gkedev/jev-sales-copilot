@@ -1,0 +1,170 @@
+{
+  "_comment": "Hand-written coaching playbook. Jev PICKS a move (Choice over the ids); code shows the text. `what`/`not_for` become the Choice option descriptions Jev sees. `phrasings` are candidate lines a rep could say next; a second, speculative Choice per move lets Jev pick the best-fitting line.",
+  "moves": [
+    {
+      "id": "dig_into_the_problem",
+      "title": "Ask a discovery question",
+      "what": "Early in the call, or the prospect's situation, current process, and problems are not yet understood. Ask an open question that gets the prospect describing how things work today.",
+      "not_for": "Situations where the pain is already clearly described, or where the prospect just raised a concern that needs a response first.",
+      "phrasings": [
+        "Walk me through how that works for your team today, start to finish.",
+        "What's the most painful part of the current process for you?",
+        "What made you take this call now, of all times?"
+      ]
+    },
+    {
+      "id": "quantify_the_pain",
+      "title": "Quantify the pain",
+      "what": "The prospect described a problem in words, but its cost in hours, money, lost jobs, or missed revenue has not been pinned down. Ask for numbers so the value is concrete.",
+      "not_for": "Calls where no problem has been mentioned yet, or where the cost has already been stated.",
+      "phrasings": [
+        "Roughly how many hours a week does that eat up across the team?",
+        "If you had to put a dollar figure on that problem per month, what would it be?",
+        "How many jobs a month would you say slip because of that?"
+      ]
+    },
+    {
+      "id": "ask_about_budget",
+      "title": "Ask about budget",
+      "what": "The prospect has a real need, but nothing is known about their budget or what they pay today, and no concern is currently open. Find out whether money exists for this.",
+      "not_for": "Calls where budget has already been discussed, where the prospect just objected to price, or before any problem has been identified.",
+      "phrasings": [
+        "What are you spending today on scheduling and dispatch, including the manual work?",
+        "Is there a budget set aside for fixing this, or would we need to build the case together?",
+        "What range would make this an easy yes for you?"
+      ]
+    },
+    {
+      "id": "confirm_decision_process",
+      "title": "Confirm the decision process",
+      "what": "The prospect is interested, but it is unclear who makes the purchase decision, who else must approve, or how buying works at their company.",
+      "not_for": "Calls where the decision maker and approval process are already known, or where a price or trust concern is open.",
+      "phrasings": [
+        "Besides you, who else would need to weigh in on a decision like this?",
+        "How did the last software purchase like this get approved on your side?",
+        "If we agree this is a fit, what happens next internally?"
+      ]
+    },
+    {
+      "id": "state_price_with_context",
+      "title": "State the price, anchored to value",
+      "what": "The prospect asked what the product costs and has not pushed back on price. Give the number plainly and immediately tie it to the cost of the problem they described; do not dodge or delay.",
+      "not_for": "Prospects who already heard the price and objected to it (that is a price objection), or calls where no one has asked about price.",
+      "phrasings": [
+        "For a team your size it's eleven hundred a month, which is roughly a quarter of what you said the slipped jobs cost you.",
+        "Happy to. It's nine hundred a month on the annual plan. Compare that to the thousand a week in wasted hours we just worked out.",
+        "Straight answer: eight fifty a month for nine techs. Want me to show how that nets out against the double bookings?"
+      ]
+    },
+    {
+      "id": "handle_price_objection_roi",
+      "title": "Handle the price objection with ROI",
+      "what": "The prospect pushed back on price, cost, or value for money. Respond by connecting the price to the cost of the problem they described, not by discounting.",
+      "not_for": "Calls where no price or cost concern was raised, or where the concern is about trust, timing, or authority.",
+      "phrasings": [
+        "Fair. Let's compare it to what the problem costs you now: you mentioned roughly ten hours a week of manual scheduling.",
+        "If it saved even two missed jobs a month, would the math work for you?",
+        "What would it need to save you per month for the price to feel obvious?"
+      ]
+    },
+    {
+      "id": "handle_trust_or_risk_concern",
+      "title": "Reassure with proof",
+      "what": "The prospect doubts the product will work for a company like theirs, doubts the vendor, or worries about implementation risk or disruption. Offer evidence: a similar customer, references, a pilot, or a guarantee.",
+      "not_for": "Price or cost concerns, or calls where no doubt has been voiced.",
+      "phrasings": [
+        "That's a fair worry. Would it help to talk to a company your size that switched last quarter?",
+        "We can start with a two-week pilot on one crew, so nothing changes for the rest of the team until you've seen it work.",
+        "What would you need to see to feel confident this is low-risk?"
+      ]
+    },
+    {
+      "id": "handle_timing_objection",
+      "title": "Handle the timing objection",
+      "what": "The prospect says it is not the right time: too busy, mid-season, mid-project, or 'revisit next quarter'. Find out what actually changes by then and connect waiting to the cost they described, without pressuring.",
+      "not_for": "Price, trust, or authority concerns, or prospects who have already named a deadline they want to hit.",
+      "phrasings": [
+        "Totally understand. What would be different in September that would make this easier?",
+        "If the busy season is the pain, would it be worth having the fix in place before it starts rather than after?",
+        "Would a lighter pilot on one crew be manageable now, so nothing lands on your plate during the peak?"
+      ]
+    },
+    {
+      "id": "address_competitor_comparison",
+      "title": "Address the competitor comparison",
+      "what": "The prospect mentioned another vendor or their current tool. Ask what they like and dislike about it, then differentiate on what matters to them.",
+      "not_for": "Calls where no other vendor, tool, or alternative was mentioned.",
+      "phrasings": [
+        "What do you like about them, and what's made you keep looking?",
+        "Where is the current tool letting you down most?",
+        "The main difference for teams like yours is real-time re-dispatch; how do you handle same-day changes with them?"
+      ]
+    },
+    {
+      "id": "clarify_simply",
+      "title": "Clarify in plain words",
+      "what": "The prospect asked what something means, asked the rep to repeat, or seems lost. Explain plainly in one or two sentences with a concrete example.",
+      "not_for": "Calls where the prospect clearly follows the conversation.",
+      "phrasings": [
+        "Let me put that more simply: when a job runs late, the schedule updates itself and the customer gets a text.",
+        "Good question, I skipped a step. In plain terms it means...",
+        "Can I show you with an example from your own day?"
+      ]
+    },
+    {
+      "id": "stop_talking_ask_open_question",
+      "title": "Stop talking, ask an open question",
+      "what": "The rep has been talking at length or listing features, and the prospect has gone quiet or is giving short answers. Hand the floor back with an open question.",
+      "not_for": "Moments where the prospect is actively talking or has just asked a direct question.",
+      "phrasings": [
+        "I've been talking a lot. What's your reaction so far?",
+        "How does that compare to what you were hoping for?",
+        "What questions does that raise for you?"
+      ]
+    },
+    {
+      "id": "summarize_and_check_understanding",
+      "title": "Summarize and check understanding",
+      "what": "The prospect shared several details, priorities, or concerns. Reflect back what you heard in a sentence or two and confirm you got it right.",
+      "not_for": "Calls where the prospect has said very little so far.",
+      "phrasings": [
+        "So if I've got this right: the dispatcher is drowning, techs get sent to the wrong jobs, and customers are calling to complain. Did I miss anything?",
+        "Let me make sure I understand what matters most to you.",
+        "It sounds like the real issue is same-day changes, not the weekly schedule. Is that fair?"
+      ]
+    },
+    {
+      "id": "create_urgency_honestly",
+      "title": "Create urgency honestly",
+      "what": "The prospect is interested but has no timeline or says 'someday'. Tie the decision to the real cost of waiting they have already described.",
+      "not_for": "Prospects who already have a deadline, or who just raised a price or trust concern.",
+      "phrasings": [
+        "Every month this stays as is costs you the ten hours a week you mentioned. What would it take to decide before the busy season?",
+        "Is there a reason to wait, or is it more that it hasn't been a priority?",
+        "If we started this month, you'd be live before summer peak. Does that timing matter to you?"
+      ]
+    },
+    {
+      "id": "propose_next_step",
+      "title": "Propose a concrete next step",
+      "what": "The conversation is positive, the prospect is engaged, and no concrete next action (demo, trial, follow-up meeting with a date, proposal) has been proposed or agreed yet.",
+      "not_for": "Calls where a next step is already agreed, or where an objection is still open.",
+      "phrasings": [
+        "How about I set up a 30-minute demo with your dispatcher on Thursday, using your actual job list?",
+        "Can I send a one-page proposal tonight and we review it together on Friday?",
+        "Let's get your ops lead on a call next week; would Tuesday or Wednesday work?"
+      ]
+    },
+    {
+      "id": "ask_for_the_close",
+      "title": "Ask for the close",
+      "what": "Need, budget, decision maker, and timeline are known, concerns have been handled, and the prospect is showing buying signals. Ask directly for the commitment.",
+      "not_for": "Calls where key qualification facts are missing or a concern is still open.",
+      "phrasings": [
+        "It sounds like this solves the problem. Shall I send the agreement over today so you can start Monday?",
+        "Is there anything stopping us from moving forward?",
+        "Would you like to go ahead with the two-crew plan we discussed?"
+      ]
+    }
+  ]
+}

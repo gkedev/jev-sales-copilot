@@ -1,0 +1,821 @@
+{
+  "model": "jev-1.13.0",
+  "passed": 56,
+  "total": 56,
+  "pass_rate": 1.0,
+  "cases": [
+    {
+      "case": "price_objection",
+      "latest": "prospect: Eleven hundred a month? That's way over what we'd ever spend on scheduling software. That's a lot of money for a calendar.",
+      "checks": [
+        {
+          "check": "prospect_objecting >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "objection_type in ('price',)",
+          "ok": true
+        },
+        {
+          "check": "stage in ('objection_handling', 'pricing')",
+          "ok": true
+        },
+        {
+          "check": "buying_signal < 0.4",
+          "ok": true
+        }
+      ],
+      "latency_ms": 1014,
+      "input_tokens": 7502,
+      "observed": {
+        "buying_signal": 0.03,
+        "commitment": 0.01,
+        "next_step_agreed": 0.02,
+        "prospect_objecting": 0.98,
+        "prospect_accepts": 0.02,
+        "prospect_disengaging": 0.35,
+        "buyer_confused": 0.04,
+        "prospect_asked_price": 0.05,
+        "rep_discovery_question": 0.01,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.02,
+        "pain_identified": 0.91,
+        "budget_discussed": 0.72,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.03,
+        "competitor_mentioned": 0.06,
+        "stage": "objection_handling (0.86)",
+        "objection_type": "price (1.00)",
+        "next_move": "handle_price_objection_roi (1.00)",
+        "urgency": 0.64,
+        "engagement": 2.0
+      }
+    },
+    {
+      "case": "buying_signal",
+      "latest": "prospect: Okay, that's exactly the part that's killing us. How would we get started with something like this?",
+      "checks": [
+        {
+          "check": "buying_signal >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "prospect_objecting < 0.4",
+          "ok": true
+        },
+        {
+          "check": "prospect_disengaging < 0.4",
+          "ok": true
+        }
+      ],
+      "latency_ms": 328,
+      "input_tokens": 7460,
+      "observed": {
+        "buying_signal": 0.98,
+        "commitment": 0.04,
+        "next_step_agreed": 0.1,
+        "prospect_objecting": 0.04,
+        "prospect_accepts": 0.94,
+        "prospect_disengaging": 0.02,
+        "buyer_confused": 0.03,
+        "prospect_asked_price": 0.03,
+        "rep_discovery_question": 0.05,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.12,
+        "pain_identified": 0.96,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.04,
+        "stage": "next_steps (0.80)",
+        "objection_type": "none (0.97)",
+        "next_move": "propose_next_step (0.94)",
+        "urgency": 1.01,
+        "engagement": 2.0
+      }
+    },
+    {
+      "case": "commitment",
+      "latest": "prospect: No. Honestly, let's do it. Send the agreement over and we'll sign this week.",
+      "checks": [
+        {
+          "check": "commitment >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "buying_signal >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "stage in ('closing', 'next_steps')",
+          "ok": true
+        },
+        {
+          "check": "prospect_objecting < 0.4",
+          "ok": true
+        }
+      ],
+      "latency_ms": 297,
+      "input_tokens": 7455,
+      "observed": {
+        "buying_signal": 0.99,
+        "commitment": 0.98,
+        "next_step_agreed": 0.98,
+        "prospect_objecting": 0.02,
+        "prospect_accepts": 0.96,
+        "prospect_disengaging": 0.05,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.97,
+        "pain_identified": 0.89,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.26,
+        "timeline_known": 0.86,
+        "competitor_mentioned": 0.02,
+        "stage": "closing (0.96)",
+        "objection_type": "none (1.00)",
+        "next_move": "propose_next_step (0.63)",
+        "urgency": 1.08,
+        "engagement": 2.0
+      }
+    },
+    {
+      "case": "rep_feature_dump",
+      "latest": "rep: So Relay is a field service platform. We automate the daily board, route techs efficiently, re-dispatch in real time, keep customers updated by SMS, integrate with every accounting package, and our mobile app has GPS tracking, digital forms, photo capture and signatures. The reporting suite alone pays for itself.",
+      "checks": [
+        {
+          "check": "rep_pitching >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "rep_discovery_question < 0.4",
+          "ok": true
+        },
+        {
+          "check": "stage in ('pitch_demo',)",
+          "ok": true
+        },
+        {
+          "check": "next_move in ('stop_talking_ask_open_question',)",
+          "ok": true
+        }
+      ],
+      "latency_ms": 297,
+      "input_tokens": 7487,
+      "observed": {
+        "buying_signal": 0.02,
+        "commitment": 0.01,
+        "next_step_agreed": 0.02,
+        "prospect_objecting": 0.02,
+        "prospect_accepts": 0.02,
+        "prospect_disengaging": 0.02,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.01,
+        "rep_pitching": 0.98,
+        "next_step_proposed": 0.02,
+        "pain_identified": 0.88,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.03,
+        "competitor_mentioned": 0.04,
+        "stage": "pitch_demo (1.00)",
+        "objection_type": "none (1.00)",
+        "next_move": "stop_talking_ask_open_question (0.91)",
+        "urgency": 0.6,
+        "engagement": 1.81
+      }
+    },
+    {
+      "case": "budget_mention",
+      "latest": "prospect: The add-on we use is about two hundred a month, and I've got discretion up to about a thousand a month for something that actually fixes this.",
+      "checks": [
+        {
+          "check": "budget_discussed >= 0.7",
+          "ok": true
+        },
+        {
+          "check": "prospect_objecting < 0.4",
+          "ok": true
+        }
+      ],
+      "latency_ms": 299,
+      "input_tokens": 7475,
+      "observed": {
+        "buying_signal": 0.53,
+        "commitment": 0.03,
+        "next_step_agreed": 0.03,
+        "prospect_objecting": 0.12,
+        "prospect_accepts": 0.23,
+        "prospect_disengaging": 0.03,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.05,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.03,
+        "pain_identified": 0.97,
+        "budget_discussed": 0.99,
+        "decision_maker_identified": 0.42,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.68,
+        "stage": "qualification (0.99)",
+        "objection_type": "none (0.70)",
+        "next_move": "state_price_with_context (0.47)",
+        "urgency": 1.0,
+        "engagement": 1.97
+      }
+    },
+    {
+      "case": "decision_maker",
+      "latest": "prospect: I can sign off on this myself up to a thousand a month. Above that, Greg the owner and I decide together.",
+      "checks": [
+        {
+          "check": "decision_maker_identified >= 0.7",
+          "ok": true
+        },
+        {
+          "check": "stage in ('qualification',)",
+          "ok": true
+        }
+      ],
+      "latency_ms": 349,
+      "input_tokens": 7454,
+      "observed": {
+        "buying_signal": 0.07,
+        "commitment": 0.02,
+        "next_step_agreed": 0.03,
+        "prospect_objecting": 0.34,
+        "prospect_accepts": 0.16,
+        "prospect_disengaging": 0.03,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.02,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.04,
+        "pain_identified": 0.86,
+        "budget_discussed": 0.62,
+        "decision_maker_identified": 0.99,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.04,
+        "stage": "qualification (1.00)",
+        "objection_type": "authority (0.75)",
+        "next_move": "confirm_decision_process (0.36)",
+        "urgency": 0.59,
+        "engagement": 1.84
+      }
+    },
+    {
+      "case": "next_step_proposed_by_rep",
+      "latest": "rep: Then how about I set up a thirty-minute demo with you, Greg and Carla on Thursday at ten, using your real job list?",
+      "checks": [
+        {
+          "check": "next_step_proposed >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "stage in ('next_steps',)",
+          "ok": true
+        },
+        {
+          "check": "rep_pitching < 0.4",
+          "ok": true
+        }
+      ],
+      "latency_ms": 291,
+      "input_tokens": 7455,
+      "observed": {
+        "buying_signal": 0.1,
+        "commitment": 0.02,
+        "next_step_agreed": 0.07,
+        "prospect_objecting": 0.03,
+        "prospect_accepts": 0.04,
+        "prospect_disengaging": 0.03,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.03,
+        "next_step_proposed": 0.99,
+        "pain_identified": 0.87,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.09,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.06,
+        "stage": "next_steps (1.00)",
+        "objection_type": "none (0.98)",
+        "next_move": "propose_next_step (0.55)",
+        "urgency": 0.85,
+        "engagement": 1.91
+      }
+    },
+    {
+      "case": "next_step_agreed_by_prospect",
+      "latest": "prospect: Thursday at ten works. I'll make sure Carla joins.",
+      "checks": [
+        {
+          "check": "next_step_agreed >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "prospect_disengaging < 0.4",
+          "ok": true
+        },
+        {
+          "check": "stage in ('next_steps',)",
+          "ok": true
+        }
+      ],
+      "latency_ms": 359,
+      "input_tokens": 7435,
+      "observed": {
+        "buying_signal": 0.9,
+        "commitment": 0.02,
+        "next_step_agreed": 0.99,
+        "prospect_objecting": 0.02,
+        "prospect_accepts": 0.98,
+        "prospect_disengaging": 0.03,
+        "buyer_confused": 0.01,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.95,
+        "pain_identified": 0.86,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.04,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.03,
+        "stage": "next_steps (1.00)",
+        "objection_type": "none (1.00)",
+        "next_move": "propose_next_step (0.34)",
+        "urgency": 0.79,
+        "engagement": 1.91
+      }
+    },
+    {
+      "case": "rep_discovery_question",
+      "latest": "rep: What happens to the customers further down the route when a job runs late?",
+      "checks": [
+        {
+          "check": "rep_discovery_question >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "rep_pitching < 0.4",
+          "ok": true
+        },
+        {
+          "check": "stage in ('discovery',)",
+          "ok": true
+        }
+      ],
+      "latency_ms": 275,
+      "input_tokens": 7391,
+      "observed": {
+        "buying_signal": 0.02,
+        "commitment": 0.01,
+        "next_step_agreed": 0.02,
+        "prospect_objecting": 0.03,
+        "prospect_accepts": 0.02,
+        "prospect_disengaging": 0.02,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.97,
+        "rep_pitching": 0.01,
+        "next_step_proposed": 0.02,
+        "pain_identified": 0.86,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.03,
+        "competitor_mentioned": 0.05,
+        "stage": "discovery (1.00)",
+        "objection_type": "none (1.00)",
+        "next_move": "dig_into_the_problem (0.65)",
+        "urgency": 0.54,
+        "engagement": 1.74
+      }
+    },
+    {
+      "case": "prospect_disengaging",
+      "latest": "prospect: Yeah, just send me some info and I'll take a look when I get a chance. I need to run.",
+      "checks": [
+        {
+          "check": "prospect_disengaging >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "next_step_agreed < 0.4",
+          "ok": true
+        },
+        {
+          "check": "buying_signal < 0.4",
+          "ok": true
+        }
+      ],
+      "latency_ms": 276,
+      "input_tokens": 7460,
+      "observed": {
+        "buying_signal": 0.13,
+        "commitment": 0.02,
+        "next_step_agreed": 0.06,
+        "prospect_objecting": 0.7,
+        "prospect_accepts": 0.23,
+        "prospect_disengaging": 0.97,
+        "buyer_confused": 0.04,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.01,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.13,
+        "pain_identified": 0.83,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.04,
+        "stage": "next_steps (0.39)",
+        "objection_type": "timing (0.96)",
+        "next_move": "handle_timing_objection (0.73)",
+        "urgency": 0.17,
+        "engagement": 0.05
+      }
+    },
+    {
+      "case": "buyer_confused",
+      "latest": "prospect: Wait, what do you mean by closes the loop? I'm not sure I follow.",
+      "checks": [
+        {
+          "check": "buyer_confused >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "next_move in ('clarify_simply',)",
+          "ok": true
+        }
+      ],
+      "latency_ms": 371,
+      "input_tokens": 7450,
+      "observed": {
+        "buying_signal": 0.08,
+        "commitment": 0.01,
+        "next_step_agreed": 0.02,
+        "prospect_objecting": 0.13,
+        "prospect_accepts": 0.04,
+        "prospect_disengaging": 0.04,
+        "buyer_confused": 0.99,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.04,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.02,
+        "pain_identified": 0.85,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.03,
+        "competitor_mentioned": 0.03,
+        "stage": "pitch_demo (0.79)",
+        "objection_type": "none (0.79)",
+        "next_move": "clarify_simply (1.00)",
+        "urgency": 0.44,
+        "engagement": 2.0
+      }
+    },
+    {
+      "case": "competitor_mentioned",
+      "latest": "prospect: We looked at DispatchPro last year and they were about half that price.",
+      "checks": [
+        {
+          "check": "competitor_mentioned >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "prospect_objecting >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "objection_type in ('competitor', 'price')",
+          "ok": true
+        }
+      ],
+      "latency_ms": 299,
+      "input_tokens": 7445,
+      "observed": {
+        "buying_signal": 0.05,
+        "commitment": 0.01,
+        "next_step_agreed": 0.02,
+        "prospect_objecting": 0.97,
+        "prospect_accepts": 0.04,
+        "prospect_disengaging": 0.1,
+        "buyer_confused": 0.04,
+        "prospect_asked_price": 0.11,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.02,
+        "pain_identified": 0.87,
+        "budget_discussed": 0.69,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.99,
+        "stage": "objection_handling (0.93)",
+        "objection_type": "price (0.66)",
+        "next_move": "address_competitor_comparison (0.48)",
+        "urgency": 0.7,
+        "engagement": 1.92
+      }
+    },
+    {
+      "case": "timeline_known",
+      "latest": "prospect: Summer. We add six seasonal techs in June and Carla can't do another summer on the spreadsheet, so we need something in place before then.",
+      "checks": [
+        {
+          "check": "timeline_known >= 0.7",
+          "ok": true
+        },
+        {
+          "check": "urgency.score >= 1.0",
+          "ok": true
+        },
+        {
+          "check": "pain_identified >= 0.7",
+          "ok": true
+        }
+      ],
+      "latency_ms": 323,
+      "input_tokens": 7459,
+      "observed": {
+        "buying_signal": 0.51,
+        "commitment": 0.02,
+        "next_step_agreed": 0.03,
+        "prospect_objecting": 0.06,
+        "prospect_accepts": 0.07,
+        "prospect_disengaging": 0.03,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.03,
+        "pain_identified": 0.94,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.05,
+        "timeline_known": 0.94,
+        "competitor_mentioned": 0.09,
+        "stage": "discovery (0.54)",
+        "objection_type": "none (0.96)",
+        "next_move": "quantify_the_pain (0.43)",
+        "urgency": 2.0,
+        "engagement": 1.99
+      }
+    },
+    {
+      "case": "pain_identified",
+      "latest": "prospect: Same-day changes. Carla is on the phone nonstop re-shuffling and last month we double-booked two techs to the same address twice. Customers call us angry.",
+      "checks": [
+        {
+          "check": "pain_identified >= 0.7",
+          "ok": true
+        },
+        {
+          "check": "next_move in ('quantify_the_pain', 'dig_into_the_problem', 'summarize_and_check_understanding')",
+          "ok": true
+        },
+        {
+          "check": "stage in ('discovery',)",
+          "ok": true
+        }
+      ],
+      "latency_ms": 306,
+      "input_tokens": 7475,
+      "observed": {
+        "buying_signal": 0.06,
+        "commitment": 0.01,
+        "next_step_agreed": 0.02,
+        "prospect_objecting": 0.07,
+        "prospect_accepts": 0.07,
+        "prospect_disengaging": 0.02,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.02,
+        "pain_identified": 0.99,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.06,
+        "stage": "discovery (1.00)",
+        "objection_type": "none (0.99)",
+        "next_move": "quantify_the_pain (0.63)",
+        "urgency": 1.28,
+        "engagement": 2.0
+      }
+    },
+    {
+      "case": "timing_objection",
+      "latest": "prospect: Honestly, not right now. We're slammed until September, can we revisit this after the busy season?",
+      "checks": [
+        {
+          "check": "prospect_objecting >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "objection_type in ('timing',)",
+          "ok": true
+        },
+        {
+          "check": "next_move in ('handle_timing_objection', 'create_urgency_honestly')",
+          "ok": true
+        }
+      ],
+      "latency_ms": 308,
+      "input_tokens": 7445,
+      "observed": {
+        "buying_signal": 0.15,
+        "commitment": 0.01,
+        "next_step_agreed": 0.17,
+        "prospect_objecting": 0.95,
+        "prospect_accepts": 0.12,
+        "prospect_disengaging": 0.73,
+        "buyer_confused": 0.03,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.01,
+        "next_step_proposed": 0.19,
+        "pain_identified": 0.88,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.8,
+        "competitor_mentioned": 0.04,
+        "stage": "objection_handling (0.86)",
+        "objection_type": "timing (1.00)",
+        "next_move": "handle_timing_objection (1.00)",
+        "urgency": 0.91,
+        "engagement": 1.84
+      }
+    },
+    {
+      "case": "authority_objection",
+      "latest": "prospect: I can't approve this myself. It would have to go through our owner and he's out for two weeks.",
+      "checks": [
+        {
+          "check": "objection_type in ('authority',)",
+          "ok": true
+        },
+        {
+          "check": "decision_maker_identified >= 0.7",
+          "ok": true
+        },
+        {
+          "check": "prospect_objecting >= 0.6",
+          "ok": true
+        }
+      ],
+      "latency_ms": 336,
+      "input_tokens": 7451,
+      "observed": {
+        "buying_signal": 0.13,
+        "commitment": 0.02,
+        "next_step_agreed": 0.06,
+        "prospect_objecting": 0.96,
+        "prospect_accepts": 0.07,
+        "prospect_disengaging": 0.22,
+        "buyer_confused": 0.03,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.13,
+        "pain_identified": 0.84,
+        "budget_discussed": 0.06,
+        "decision_maker_identified": 0.98,
+        "timeline_known": 0.13,
+        "competitor_mentioned": 0.04,
+        "stage": "qualification (0.94)",
+        "objection_type": "authority (1.00)",
+        "next_move": "confirm_decision_process (0.77)",
+        "urgency": 0.67,
+        "engagement": 1.72
+      }
+    },
+    {
+      "case": "prospect_accepts",
+      "latest": "prospect: Yeah, okay, that's a fair way to look at it. That makes sense.",
+      "checks": [
+        {
+          "check": "prospect_accepts >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "prospect_objecting < 0.4",
+          "ok": true
+        }
+      ],
+      "latency_ms": 609,
+      "input_tokens": 7486,
+      "observed": {
+        "buying_signal": 0.36,
+        "commitment": 0.02,
+        "next_step_agreed": 0.04,
+        "prospect_objecting": 0.04,
+        "prospect_accepts": 0.98,
+        "prospect_disengaging": 0.04,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.02,
+        "rep_pitching": 0.04,
+        "next_step_proposed": 0.02,
+        "pain_identified": 0.96,
+        "budget_discussed": 0.59,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.03,
+        "stage": "objection_handling (0.96)",
+        "objection_type": "price (0.47)",
+        "next_move": "propose_next_step (0.79)",
+        "urgency": 0.96,
+        "engagement": 1.93
+      }
+    },
+    {
+      "case": "price_asked_neutral",
+      "latest": "prospect: Okay, this is interesting. What does something like this cost?",
+      "checks": [
+        {
+          "check": "prospect_asked_price >= 0.6",
+          "ok": true
+        },
+        {
+          "check": "stage in ('pricing',)",
+          "ok": true
+        },
+        {
+          "check": "prospect_objecting < 0.4",
+          "ok": true
+        },
+        {
+          "check": "next_move in ('state_price_with_context', 'ask_about_budget')",
+          "ok": true
+        }
+      ],
+      "latency_ms": 274,
+      "input_tokens": 7436,
+      "observed": {
+        "buying_signal": 0.82,
+        "commitment": 0.02,
+        "next_step_agreed": 0.03,
+        "prospect_objecting": 0.22,
+        "prospect_accepts": 0.6,
+        "prospect_disengaging": 0.03,
+        "buyer_confused": 0.04,
+        "prospect_asked_price": 0.99,
+        "rep_discovery_question": 0.03,
+        "rep_pitching": 0.02,
+        "next_step_proposed": 0.04,
+        "pain_identified": 0.86,
+        "budget_discussed": 0.06,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.04,
+        "competitor_mentioned": 0.03,
+        "stage": "pricing (0.99)",
+        "objection_type": "price (0.68)",
+        "next_move": "state_price_with_context (0.93)",
+        "urgency": 0.62,
+        "engagement": 2.0
+      }
+    },
+    {
+      "case": "warm_opening",
+      "latest": "rep: Ha, I know Tuesdays are hectic for dispatch, thanks for squeezing me in. How has your week been?",
+      "checks": [
+        {
+          "check": "rep_pitching < 0.4",
+          "ok": true
+        },
+        {
+          "check": "next_step_proposed < 0.4",
+          "ok": true
+        }
+      ],
+      "latency_ms": 335,
+      "input_tokens": 7406,
+      "observed": {
+        "buying_signal": 0.02,
+        "commitment": 0.01,
+        "next_step_agreed": 0.02,
+        "prospect_objecting": 0.02,
+        "prospect_accepts": 0.04,
+        "prospect_disengaging": 0.03,
+        "buyer_confused": 0.02,
+        "prospect_asked_price": 0.01,
+        "rep_discovery_question": 0.45,
+        "rep_pitching": 0.01,
+        "next_step_proposed": 0.02,
+        "pain_identified": 0.82,
+        "budget_discussed": 0.03,
+        "decision_maker_identified": 0.03,
+        "timeline_known": 0.03,
+        "competitor_mentioned": 0.03,
+        "stage": "opening (0.46)",
+        "objection_type": "none (0.99)",
+        "next_move": "quantify_the_pain (0.39)",
+        "urgency": 0.47,
+        "engagement": 1.81
+      }
+    }
+  ]
+}

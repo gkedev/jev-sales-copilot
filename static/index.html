@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Sales Copilot · Jev</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0e1117; --panel: #161b22; --panel2: #1c2330; --border: #2a3140; --text: #e6e9ef; --muted: #8b95a7;
+    --good: #2ecc71; --bad: #ff5c5c; --warn: #f5b942; --accent: #6ea8fe; --accent2: #b78bff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-size: 14px; }
+  header { display: flex; align-items: center; gap: 16px; padding: 10px 18px; border-bottom: 1px solid var(--border); background: var(--panel); position: sticky; top: 0; z-index: 5; }
+  header { flex-wrap: wrap; row-gap: 6px; }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; letter-spacing: 0.2px; white-space: nowrap; }
+  .pill { font-size: 12px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); background: var(--panel2); white-space: nowrap; }
+  .pill b { color: var(--text); font-weight: 600; }
+  .pill.ok { border-color: #2ecc7166; }
+  .pill.err { border-color: var(--bad); color: var(--bad); }
+  .spacer { flex: 1; }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 10px 18px; border-bottom: 1px solid var(--border); background: var(--panel); }
+  .tabs { display: flex; gap: 2px; background: var(--panel2); border-radius: 8px; padding: 2px; }
+  .tabs button { background: transparent; border: 0; color: var(--muted); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .tabs button.active { background: var(--accent); color: #0b0f16; font-weight: 600; }
+  .mode { display: none; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .mode.active { display: flex; }
+  select, input[type=text], input[type=number] { background: var(--panel2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+  input[type=text] { min-width: 340px; }
+  button.btn { background: var(--panel2); color: var(--text); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
+  button.btn:hover { border-color: var(--accent); }
+  button.btn.primary { background: var(--accent); color: #0b0f16; border-color: var(--accent); font-weight: 600; }
+  button.btn.danger { border-color: var(--bad); color: var(--bad); }
+  button.btn.speaker { min-width: 110px; }
+  button.btn.speaker.rep.active { background: #6ea8fe33; border-color: var(--accent); }
+  button.btn.speaker.prospect.active { background: #b78bff33; border-color: var(--accent2); }
+  .slider { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+  main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(360px, 1fr); gap: 14px; padding: 14px 18px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .card h3 { margin: 0 0 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+  .card h3 .right { margin-left: auto; text-transform: none; letter-spacing: 0; font-weight: 400; }
+  .hero { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 12px; align-items: stretch; }
+  .bignum { display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--panel2); border-radius: 10px; padding: 10px; }
+  .bignum .n { font-size: 54px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+  .bignum .d { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .bignum .delta { font-size: 14px; margin-top: 8px; font-weight: 600; }
+  .chartwrap { position: relative; height: 260px; min-width: 0; }
+  .stack { min-width: 0; }
+  .transcript { max-height: 380px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .utt { display: grid; grid-template-columns: 44px 70px 1fr 54px; gap: 8px; padding: 6px 8px; border-radius: 8px; background: var(--panel2); font-size: 13px; align-items: baseline; }
+  .utt.latest { outline: 1px solid var(--accent); }
+  .utt .t { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 12px; }
+  .utt .who { font-weight: 600; }
+  .utt.rep .who { color: var(--accent); } .utt.prospect .who { color: var(--accent2); }
+  .utt .p { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .stage { display: flex; gap: 6px; flex-wrap: wrap; }
+  .stage span { font-size: 12px; padding: 4px 8px; border-radius: 6px; background: var(--panel2); color: var(--muted); border: 1px solid transparent; }
+  .stage span.on { background: #6ea8fe22; color: var(--text); border-color: var(--accent); font-weight: 600; }
+  .coach { border-left: 4px solid var(--good); padding-left: 10px; }
+  .coach.listening { border-left-color: var(--muted); color: var(--muted); font-style: italic; }
+  .coach .title { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .coach .what { color: var(--muted); font-size: 12.5px; margin-bottom: 8px; }
+  .coach .line { padding: 6px 8px; border-radius: 6px; background: var(--panel2); margin-bottom: 4px; font-size: 13px; }
+  .coach .line.best { background: #2ecc7122; border: 1px solid #2ecc7166; }
+  .coach .line.best::before { content: "say: "; color: var(--good); font-weight: 700; font-style: normal; }
+  .coach .line.tailored { background: #b78bff1f; border: 1px solid #b78bff88; font-size: 14px; }
+  .coach .line.tailored::before { content: "say (tailored): "; color: var(--accent2); font-weight: 700; }
+  .coach .line.tailored .meta { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; }
+  .coach .line.pending { color: var(--muted); font-style: italic; background: transparent; border: 1px dashed var(--border); }
+  .coach .line.rejected { color: var(--muted); font-size: 11.5px; background: transparent; border: 1px dashed #ff5c5c55; text-decoration: line-through; }
+  .coach .line.rejected::before { content: "dropped: "; color: var(--bad); font-weight: 700; text-decoration: none; display: inline-block; }
+  .objection { display: none; border-left: 4px solid var(--bad); padding-left: 10px; }
+  .objection.open { display: block; }
+  .objection .type { font-size: 17px; font-weight: 700; text-transform: capitalize; }
+  .signals { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .sig { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 6px; background: var(--panel2); font-size: 12.5px; border: 1px solid transparent; }
+  .sig .dot { width: 9px; height: 9px; border-radius: 50%; background: #3a4250; flex: none; }
+  .sig.pos.on .dot { background: var(--good); box-shadow: 0 0 8px var(--good); }
+  .sig.neg.on .dot { background: var(--bad); box-shadow: 0 0 8px var(--bad); }
+  .sig.on { border-color: #ffffff22; }
+  .sig .v { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .sig .lock { color: var(--warn); font-size: 11px; }
+  .bar { height: 12px; border-radius: 6px; background: var(--panel2); overflow: hidden; display: flex; }
+  .bar .rep { background: var(--accent); }
+  .bar .pro { background: var(--accent2); }
+  .kv { display: flex; gap: 14px; flex-wrap: wrap; color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+  .kv b { color: var(--text); }
+  table.w { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.w td { padding: 3px 4px; border-bottom: 1px solid var(--border); }
+  table.w input { width: 64px; padding: 2px 4px; font-size: 12.5px; text-align: right; }
+  table.w td.c { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+  .sens { display: flex; flex-direction: column; gap: 4px; }
+  .sens div { display: flex; justify-content: space-between; padding: 4px 8px; background: var(--panel2); border-radius: 6px; font-size: 12.5px; }
+  .up { color: var(--good); } .down { color: var(--bad); }
+  .muted { color: var(--muted); }
+  .warn { color: var(--warn); }
+  details summary { cursor: pointer; color: var(--muted); font-size: 12px; }
+  #interim { color: var(--muted); font-style: italic; min-width: 200px; font-size: 12.5px; }
+  .card.video { display: none; }
+  .card.video.on { display: block; }
+  .playerwrap { position: relative; width: 100%; aspect-ratio: 16 / 9; max-height: 400px; background: #000; border-radius: 8px; overflow: hidden; }
+  .playerwrap iframe, .playerwrap > div { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .toast { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); background: var(--bad); color: #fff; padding: 8px 14px; border-radius: 8px; display: none; z-index: 10; }
+  @media (max-width: 1000px) { main { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Sales Copilot <span class="muted">· live closing probability with Jev</span></h1>
+  <span class="pill" id="pill-model">model <b>—</b></span>
+  <span class="pill" id="pill-latency">latency <b>—</b></span>
+  <span class="pill" id="pill-cost">cost <b>$0.0000</b></span>
+  <span class="pill" id="pill-tokens">tokens <b>0</b></span>
+  <span class="pill" id="pill-llm" title="tailored phrasing: a small LLM rewrites the chosen playbook line; Jev verifies it">llm <b>—</b></span>
+  <span class="spacer"></span>
+  <span class="pill" id="pill-conn">connecting…</span>
+</header>
+
+<div class="controls">
+  <div class="tabs">
+    <button data-mode="replay" class="active">Replay</button>
+    <button data-mode="video">Video</button>
+    <button data-mode="live">Live mic</button>
+    <button data-mode="type">Type</button>
+  </div>
+
+  <div class="mode" id="mode-video">
+    <select id="video-select"></select>
+    <button class="btn primary" id="btn-video-load">Load video</button>
+    <button class="btn" id="btn-video-play" disabled>▶ Play</button>
+    <button class="btn" id="btn-video-restart" disabled>↺ Restart</button>
+    <span class="muted">real recorded call · the copilot fires each utterance as it is spoken · scrub freely, it re-syncs</span>
+    <span class="muted" id="video-progress"></span>
+  </div>
+
+  <div class="mode active" id="mode-replay">
+    <select id="call-select"></select>
+    <button class="btn primary" id="btn-play">▶ Play</button>
+    <button class="btn" id="btn-pause">⏸ Pause</button>
+    <button class="btn" id="btn-stop">■ Stop</button>
+    <label class="slider">speed <input type="range" id="speed" min="0.5" max="20" step="0.5" value="4" /> <span id="speed-val">4×</span></label>
+    <span class="muted" id="replay-progress"></span>
+  </div>
+
+  <div class="mode" id="mode-live">
+    <button class="btn primary" id="btn-mic">🎙 Start mic</button>
+    <button class="btn speaker rep active" id="spk-rep">Rep speaking</button>
+    <button class="btn speaker prospect" id="spk-prospect">Prospect speaking</button>
+    <span class="muted">(press <b>S</b> to switch speaker · Chrome only, no diarization)</span>
+    <span id="interim"></span>
+  </div>
+
+  <div class="mode" id="mode-type">
+    <select id="type-speaker"><option value="rep">rep</option><option value="prospect">prospect</option></select>
+    <input type="text" id="type-text" placeholder="Type an utterance and press Enter…" />
+    <button class="btn" id="btn-send">Send</button>
+    <button class="btn danger" id="btn-reset">Reset call</button>
+  </div>
+</div>
+
+<main>
+  <div class="stack">
+    <div class="card video" id="video-card">
+      <h3>The call <span class="right muted" id="video-sub"></span></h3>
+      <div class="playerwrap"><div id="yt-player"></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Closing probability <span class="right muted" id="hero-sub">waiting for the call to start</span></h3>
+      <div class="hero">
+        <div class="bignum">
+          <div class="n" id="prob">—</div>
+          <div class="d">probability of closing</div>
+          <div class="delta" id="prob-delta"></div>
+        </div>
+        <div class="chartwrap"><canvas id="chart"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Transcript <span class="right" id="talk-summary"></span></h3>
+      <div class="bar" id="talkbar"><div class="rep" style="width:50%"></div><div class="pro" style="width:50%"></div></div>
+      <div class="kv"><span>rep talk share <b id="talk-ratio">—</b></span><span>rep pace <b id="pace-rep">—</b> wpm</span><span>prospect pace <b id="pace-pro">—</b> wpm</span><span id="monologue" class="warn"></span></div>
+      <div class="transcript" id="transcript" style="margin-top:8px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Composite weights <span class="right muted">change a coefficient, not a prompt — recomputes the whole timeline without new Jev calls</span></h3>
+      <table class="w" id="weights"></table>
+      <div class="kv" style="margin-top:8px">
+        <button class="btn primary" id="btn-apply">Apply weights</button>
+        <button class="btn" id="btn-reset-weights">Reset to defaults</button>
+        <span class="muted">p = EMA(α=<span id="alpha"></span>) of [stage prior + Σ weight × signal]; scores centered on the middle level.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <h3>Call stage <span class="right muted" id="stage-conf"></span></h3>
+      <div class="stage" id="stages"></div>
+    </div>
+
+    <div class="card">
+      <h3>Next best move <span class="right muted" id="coach-conf"></span></h3>
+      <div class="coach listening" id="coach">listening…</div>
+    </div>
+
+    <div class="card objection" id="objection">
+      <h3>Open objection <span class="right muted" id="obj-conf"></span></h3>
+      <div class="type" id="obj-type">—</div>
+      <div class="muted" id="obj-since"></div>
+    </div>
+
+    <div class="card">
+      <h3>Live signals <span class="right muted">Jev answers per utterance</span></h3>
+      <div class="signals" id="signals"></div>
+    </div>
+
+    <div class="card">
+      <h3>What moved the number <span class="right muted">top-3 contributions on last utterance</span></h3>
+      <div class="sens" id="sens"><div class="muted">—</div></div>
+    </div>
+
+    <div class="card">
+      <details><summary>Last Jev request</summary><pre id="jevmeta" class="muted" style="font-size:11.5px;white-space:pre-wrap"></pre></details>
+    </div>
+  </div>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const state = { ws: null, hello: null, defaultsWeights: [], timeline: [], lastProb: null, speaker: 'rep', recognizing: false, liveStart: null, currentCall: null, prevIndex: -1, coaching: null, tailored: null };
+
+  // ---------- chart ----------
+  const ctx = $('chart').getContext('2d');
+  const chart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [
+      { label: 'closing probability', data: [], borderColor: '#2ecc71', backgroundColor: '#2ecc7122', fill: true, tension: 0.3, pointRadius: 3, pointBackgroundColor: [], borderWidth: 2.5 },
+      { label: 'instant estimate', data: [], borderColor: '#8b95a7', borderDash: [4, 4], pointRadius: 0, borderWidth: 1, tension: 0.3 },
+    ]},
+    options: {
+      animation: { duration: 250 }, responsive: true, maintainAspectRatio: false,
+      scales: { y: { min: 0, max: 100, ticks: { color: '#8b95a7', callback: v => v + '%' }, grid: { color: '#2a3140' } }, x: { ticks: { color: '#8b95a7' }, grid: { display: false }, title: { display: true, text: 'utterance', color: '#8b95a7' } } },
+      plugins: { legend: { labels: { color: '#8b95a7', boxWidth: 12 } }, tooltip: { callbacks: { afterLabel: (c) => { const s = state.timeline[c.dataIndex]; return s ? `${s.speaker}: ${s.text || ''}`.slice(0, 120) : ''; } } } },
+    },
+  });
+  function redrawChart() {
+    chart.data.labels = state.timeline.map(s => s.index);
+    chart.data.datasets[0].data = state.timeline.map(s => +(s.probability * 100).toFixed(1));
+    chart.data.datasets[0].pointBackgroundColor = state.timeline.map(s => s.speaker === 'rep' ? '#6ea8fe' : '#b78bff');
+    chart.data.datasets[1].data = state.timeline.map(s => +(s.instant * 100).toFixed(1));
+    chart.update();
+  }
+
+  // ---------- ws ----------
+  function connect() {
+    const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+    state.ws = ws;
+    ws.onopen = () => { $('pill-conn').textContent = 'connected'; $('pill-conn').className = 'pill ok'; };
+    ws.onclose = () => { $('pill-conn').textContent = 'disconnected · retrying'; $('pill-conn').className = 'pill err'; setTimeout(connect, 1500); };
+    ws.onmessage = (ev) => handle(JSON.parse(ev.data));
+  }
+  const send = (o) => { if (state.ws && state.ws.readyState === 1) state.ws.send(JSON.stringify(o)); };
+
+  function handle(m) {
+    if (m.type === 'hello') {
+      state.hello = m; state.defaultsWeights = m.weights;
+      $('pill-model').innerHTML = `model <b>${m.model}</b>`;
+      $('pill-llm').innerHTML = m.llm ? `llm <b>${m.llm}</b> <span class="muted">tailored phrasing on</span>` : `llm <b>off</b> <span class="muted">set ANTHROPIC_API_KEY</span>`;
+      $('alpha').textContent = m.ema_alpha;
+      const sel = $('call-select'); sel.innerHTML = '';
+      m.calls.forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = `${c.title} (${c.utterances} turns, ${Math.round(c.duration_s / 60)} min)`; sel.appendChild(o); });
+      const vsel = $('video-select'); vsel.innerHTML = '';
+      m.calls.filter(c => c.video && c.video.youtube_id).forEach(c => { const o = document.createElement('option'); o.value = c.id; o.textContent = `${c.title} (${Math.round(c.duration_s / 60)} min)`; vsel.appendChild(o); });
+      if (!vsel.options.length) { const o = document.createElement('option'); o.textContent = 'no video calls in data/calls'; o.disabled = true; vsel.appendChild(o); }
+      renderStages(null); renderWeights(m.weights); renderSignalsSkeleton(m.weights);
+      if (!m.has_api_key) toast('Server has no API key. Set TYPESAFE_API_KEY and restart.');
+    } else if (m.type === 'phrasing') {
+      // tailored line from the LLM (already verified by Jev server-side); keep it only while the move is unchanged
+      state.tailored = { move_id: m.move_id, index: m.index, text: m.text, rejected: m.rejected, candidate: m.candidate, llm: m.llm, verification: m.verification, reason: m.reason };
+      renderCoach(state.coaching);
+      const l = m.llm;
+      $('pill-llm').innerHTML = `llm <b>${l.model}</b> <span class="muted">${l.latency_ms} ms · ${l.shown} shown / ${l.rejected} dropped · $${l.cum_cost_usd.toFixed(4)}</span>`;
+      if (l.error) toast('LLM error: ' + l.error);
+    } else if (m.type === 'reset') {
+      state.timeline = []; state.lastProb = null; state.prevIndex = -1; state.currentCall = m.call; state.tailored = null; state.coaching = null;
+      $('transcript').innerHTML = ''; $('prob').textContent = '—'; $('prob-delta').textContent = ''; $('replay-progress').textContent = '';
+      $('hero-sub').textContent = m.call ? m.call.title : ($('video-card').classList.contains('on') && video.call ? video.call.title : 'new call');
+      redrawChart(); renderStages(null); renderCoach(null); renderObjection(null); $('sens').innerHTML = '<div class="muted">—</div>';
+      if (m.weights) renderWeights(m.weights);
+    } else if (m.type === 'update') {
+      applyUpdate(m);
+    } else if (m.type === 'recomputed') {
+      state.timeline = m.timeline.map((s, i) => ({ ...s, text: state.timeline[i] ? state.timeline[i].text : '' }));
+      redrawChart(); renderProb(m.probability, null);
+      renderSens(m.sensitivity); if (m.signals) renderSignals(m.signals);
+      document.querySelectorAll('#transcript .utt').forEach((el, i) => { const s = state.timeline[i]; if (s) el.querySelector('.p').textContent = Math.round(s.probability * 100) + '%'; });
+      toast('Timeline recomputed with new weights (0 Jev calls)', false);
+    } else if (m.type === 'replay_done') {
+      $('replay-progress').textContent = `done · final ${Math.round(m.final_probability * 100)}%`;
+    } else if (m.type === 'error') {
+      toast(m.message);
+    }
+  }
+
+  function applyUpdate(m) {
+    if (m.replay) $('replay-progress').textContent = `${m.replay.index + 1} / ${m.replay.total}`;
+    state.timeline = m.timeline.map((s, i) => ({ ...s, text: (state.timeline[i] && state.timeline[i].text) || (s.index === m.index ? m.text : '') }));
+    redrawChart();
+    renderProb(m.probability, state.lastProb); state.lastProb = m.probability;
+    addUtterance(m);
+    state.coaching = m.coaching;
+    if (state.tailored && (m.coaching.gated || m.coaching.move_id !== state.tailored.move_id)) state.tailored = null; // move changed: tailored line is stale
+    renderStages(m.stage); renderCoach(m.coaching); renderObjection(m.objection);
+    renderSignals(m.signals); renderTalk(m.talk); renderSens(m.sensitivity);
+    const j = m.jev, jl = m.jev_last;
+    $('pill-latency').innerHTML = `latency <b>${Math.round(jl.latency_ms)} ms</b> <span class="muted">(mean ${Math.round(j.mean_ms)} · p95 ${Math.round(j.p95_ms)})</span>`;
+    $('pill-cost').innerHTML = `cost <b>$${j.cum_cost_usd.toFixed(4)}</b> <span class="muted">${j.requests} req</span>`;
+    $('pill-tokens').innerHTML = `tokens <b>${j.total_input_tokens.toLocaleString()}</b>`;
+    if (jl.model) $('pill-model').innerHTML = `model <b>${jl.model}</b>`;
+    $('jevmeta').textContent = JSON.stringify({ ...jl, stage: m.stage, coaching_probs: m.coaching.probabilities, contributions: m.contributions }, null, 1);
+    if (jl.error) toast('Jev error: ' + jl.error);
+    if (m.stage_prior) state.stagePrior = m.stage_prior;
+  }
+
+  // ---------- renderers ----------
+  function renderProb(p, prev) {
+    const pct = Math.round(p * 100);
+    const el = $('prob'); el.textContent = pct + '%';
+    el.style.color = p >= 0.6 ? 'var(--good)' : p >= 0.35 ? 'var(--warn)' : 'var(--bad)';
+    if (prev != null) { const d = Math.round((p - prev) * 100); $('prob-delta').textContent = d === 0 ? '±0' : (d > 0 ? '▲ +' : '▼ ') + d + ' pts'; $('prob-delta').className = 'delta ' + (d > 0 ? 'up' : d < 0 ? 'down' : 'muted'); }
+  }
+  function addUtterance(m) {
+    const wrap = $('transcript');
+    wrap.querySelectorAll('.latest').forEach(e => e.classList.remove('latest'));
+    const div = document.createElement('div'); div.className = `utt ${m.speaker} latest`;
+    const mm = String(Math.floor(m.t / 60)).padStart(2, '0'), ss = String(Math.floor(m.t % 60)).padStart(2, '0');
+    div.innerHTML = `<span class="t">${mm}:${ss}</span><span class="who">${m.speaker}</span><span>${escapeHtml(m.text)}</span><span class="p">${Math.round(m.probability * 100)}%</span>`;
+    wrap.appendChild(div); wrap.scrollTop = wrap.scrollHeight;
+  }
+  const STAGES = ['opening', 'discovery', 'qualification', 'pitch_demo', 'objection_handling', 'pricing', 'closing', 'next_steps'];
+  function renderStages(stage) {
+    $('stages').innerHTML = STAGES.map(s => `<span class="${stage && stage.choice === s ? 'on' : ''}">${s.replace('_', ' / ')}</span>`).join('');
+    $('stage-conf').textContent = stage ? `confidence ${stage.confidence.toFixed(2)}` : '';
+  }
+  function renderCoach(c) {
+    const el = $('coach');
+    if (!c || c.gated) { el.className = 'coach listening'; el.textContent = c && c.title ? `listening… (leaning "${c.title}", confidence ${c.confidence})` : 'listening…'; $('coach-conf').textContent = ''; return; }
+    el.className = 'coach';
+    $('coach-conf').textContent = `confidence ${c.confidence.toFixed(2)} ≥ ${state.hello.thresholds.next_move_min_confidence}`;
+    const lines = c.phrasings.map(p => `<div class="line ${p === c.best_phrasing ? 'best' : ''}">${escapeHtml(p)}</div>`);
+    let tailored = '';
+    const t = state.tailored;
+    if (t && t.move_id === c.move_id) {
+      if (t.text) {
+        const v = t.verification || {};
+        const meta = `${t.llm.model} · ${t.llm.latency_ms} ms` + (v.invents_fact != null ? ` · Jev: invents-fact ${v.invents_fact.toFixed(2)}, on-move ${(v.on_move ?? 0).toFixed(2)}` : '') + ` · trigger: ${t.reason}`;
+        tailored = `<div class="line tailored">${escapeHtml(t.text)}<span class="meta">${escapeHtml(meta)}</span></div>`;
+      } else if (t.rejected && t.candidate) {
+        tailored = `<div class="line rejected" title="${escapeHtml(t.rejected)}">${escapeHtml(t.candidate)} <span class="muted">(${escapeHtml(t.rejected)})</span></div>`;
+      }
+    } else if (state.hello && state.hello.llm && !(state.hello.personalize_skip_moves || []).includes(c.move_id)) {
+      tailored = `<div class="line pending">tailoring a line for this moment…</div>`;
+    }
+    el.innerHTML = `<div class="title">${escapeHtml(c.title)}</div><div class="what">${escapeHtml(c.what)}</div>${tailored}${lines.join('')}`;
+  }
+  function renderObjection(o) {
+    const el = $('objection');
+    if (!o || !o.open) { el.className = 'card objection'; return; }
+    el.className = 'card objection open';
+    $('obj-type').textContent = (o.type || 'unknown') + ' objection';
+    $('obj-conf').textContent = o.confidence ? `type confidence ${o.confidence.toFixed(2)}` : '';
+    $('obj-since').textContent = `raised at utterance #${o.since} · unresolved`;
+  }
+  function renderSignalsSkeleton(weights) {
+    $('signals').innerHTML = weights.map(w => `<div class="sig ${w.weight >= 0 ? 'pos' : 'neg'}" id="sig-${w.signal}"><span class="dot"></span><span>${w.label}</span><span class="v">—</span></div>`).join('');
+  }
+  function renderSignals(sig) {
+    for (const [name, s] of Object.entries(sig)) {
+      const el = $('sig-' + name); if (!el) continue;
+      const on = s.kind === 'score' ? (s.value >= 0.75 || s.value <= 0.25) : s.on;
+      el.className = `sig ${s.contribution >= 0 ? 'pos' : 'neg'} ${on ? 'on' : ''}`;
+      if (s.kind === 'score') { el.className = `sig ${s.value >= 0.5 ? 'pos' : 'neg'} ${on ? 'on' : ''}`; }
+      el.querySelector('.v').innerHTML = (s.persisted ? '<span class="lock">🔒 </span>' : '') + (s.kind === 'score' ? ['low', 'mid', 'high'][s.level] || s.value.toFixed(2) : s.value.toFixed(2));
+    }
+  }
+  function renderTalk(t) {
+    $('talkbar').innerHTML = `<div class="rep" style="width:${t.ratio_rep * 100}%"></div><div class="pro" style="width:${(1 - t.ratio_rep) * 100}%"></div>`;
+    $('talk-ratio').textContent = Math.round(t.ratio_rep * 100) + '%';
+    $('talk-ratio').style.color = t.ratio_rep > 0.65 ? 'var(--bad)' : 'var(--text)';
+    $('pace-rep').textContent = t.pace_wpm_rep; $('pace-pro').textContent = t.pace_wpm_prospect;
+    $('monologue').textContent = t.rep_monologue ? '⚠ rep monologue' : '';
+    $('talk-summary').textContent = `${t.rep_words} rep words · ${t.prospect_words} prospect words`;
+  }
+  function renderSens(list) {
+    if (!list || !list.length) { $('sens').innerHTML = '<div class="muted">no change</div>'; return; }
+    $('sens').innerHTML = list.map(s => `<div><span>${escapeHtml(s.label)}</span><span class="${s.delta > 0 ? 'up' : 'down'}">${s.delta > 0 ? '+' : ''}${(s.delta * 100).toFixed(1)} pts</span></div>`).join('');
+  }
+  function renderWeights(weights) {
+    $('weights').innerHTML = '<tr class="muted"><td>signal</td><td>kind</td><td style="text-align:right">weight</td></tr>' +
+      weights.map(w => `<tr><td>${w.label}</td><td class="muted">${w.kind}</td><td class="c"><input type="number" step="0.01" data-signal="${w.signal}" value="${w.weight}" /></td></tr>`).join('');
+  }
+
+  function toast(msg, isErr = true) { const t = $('toast'); t.textContent = msg; t.style.background = isErr ? 'var(--bad)' : 'var(--good)'; t.style.color = isErr ? '#fff' : '#0b0f16'; t.style.display = 'block'; clearTimeout(t._h); t._h = setTimeout(() => t.style.display = 'none', 3500); }
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  // ---------- controls ----------
+  document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('active', x === b));
+    document.querySelectorAll('.mode').forEach(m => m.classList.toggle('active', m.id === 'mode-' + b.dataset.mode));
+    const isVideo = b.dataset.mode === 'video';
+    $('video-card').classList.toggle('on', isVideo && !!video.player);
+    if (!isVideo && video.player && video.player.pauseVideo) video.player.pauseVideo();
+  }));
+  $('speed').addEventListener('input', () => { $('speed-val').textContent = $('speed').value + '×'; send({ type: 'set_speed', speed: +$('speed').value }); });
+  $('btn-play').addEventListener('click', () => { send({ type: 'start_replay', call: $('call-select').value, speed: +$('speed').value }); $('btn-pause').textContent = '⏸ Pause'; state.pausedFlag = false; });
+  $('btn-pause').addEventListener('click', () => { state.pausedFlag = !state.pausedFlag; send({ type: state.pausedFlag ? 'pause' : 'resume' }); $('btn-pause').textContent = state.pausedFlag ? '▶ Resume' : '⏸ Pause'; });
+  $('btn-stop').addEventListener('click', () => send({ type: 'stop' }));
+  $('btn-reset').addEventListener('click', () => { send({ type: 'reset' }); state.liveStart = null; });
+  $('btn-apply').addEventListener('click', () => {
+    const weights = {}; document.querySelectorAll('#weights input').forEach(i => weights[i.dataset.signal] = +i.value);
+    send({ type: 'set_weights', weights });
+  });
+  $('btn-reset-weights').addEventListener('click', () => { renderWeights(state.defaultsWeights); const weights = {}; state.defaultsWeights.forEach(w => weights[w.signal] = w.weight); send({ type: 'set_weights', weights }); });
+
+  // typed utterances
+  function sendTyped() {
+    const text = $('type-text').value.trim(); if (!text) return;
+    send({ type: 'utterance', speaker: $('type-speaker').value, text, t: liveT() });
+    $('type-text').value = '';
+    $('type-speaker').value = $('type-speaker').value === 'rep' ? 'prospect' : 'rep'; // alternate by default
+  }
+  $('btn-send').addEventListener('click', sendTyped);
+  $('type-text').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendTyped(); });
+  function liveT() { if (!state.liveStart) state.liveStart = Date.now(); return (Date.now() - state.liveStart) / 1000; }
+
+  // live mic (Web Speech API, Chrome only; no diarization -> manual speaker toggle)
+  function setSpeaker(s) { state.speaker = s; $('spk-rep').classList.toggle('active', s === 'rep'); $('spk-prospect').classList.toggle('active', s === 'prospect'); }
+  $('spk-rep').addEventListener('click', () => setSpeaker('rep'));
+  $('spk-prospect').addEventListener('click', () => setSpeaker('prospect'));
+  document.addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 's' && document.activeElement.tagName !== 'INPUT') setSpeaker(state.speaker === 'rep' ? 'prospect' : 'rep'); });
+  let rec = null;
+  $('btn-mic').addEventListener('click', () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { toast('Web Speech API not available. Use Chrome, or the Type tab.'); return; }
+    if (state.recognizing) { state.recognizing = false; rec.stop(); $('btn-mic').textContent = '🎙 Start mic'; return; }
+    rec = new SR(); rec.continuous = true; rec.interimResults = true; rec.lang = 'en-US';
+    rec.onresult = (ev) => {
+      let interim = '';
+      for (let i = ev.resultIndex; i < ev.results.length; i++) {
+        const r = ev.results[i];
+        if (r.isFinal) { const text = r[0].transcript.trim(); if (text) send({ type: 'utterance', speaker: state.speaker, text, t: liveT() }); }
+        else interim += r[0].transcript;
+      }
+      $('interim').textContent = interim ? `${state.speaker}: ${interim}…` : '';
+    };
+    rec.onerror = (e) => toast('mic error: ' + e.error);
+    rec.onend = () => { if (state.recognizing) { try { rec.start(); } catch (_) {} } };
+    rec.start(); state.recognizing = true; liveT(); $('btn-mic').textContent = '■ Stop mic';
+  });
+
+  // ---------- video mode: a real recorded call, copilot fires each utterance when it has been spoken ----------
+  // The transcript JSON carries `t` (start) and `t_end` (end) per utterance, aligned to the YouTube timeline.
+  // We poll the player and send an utterance once its `t_end` has passed, exactly as a live STT would finalize it.
+  // Scrubbing backwards resets the session and fast-forwards the copilot through everything before the new position.
+  const video = { player: null, call: null, next: 0, timer: null, apiReady: null, lastT: 0 };
+  function loadYouTubeApi() {
+    if (window.YT && window.YT.Player) return Promise.resolve();
+    if (video.apiReady) return video.apiReady;
+    video.apiReady = new Promise((res) => {
+      window.onYouTubeIframeAPIReady = res;
+      const s = document.createElement('script'); s.src = 'https://www.youtube.com/iframe_api'; document.head.appendChild(s);
+    });
+    return video.apiReady;
+  }
+  const fireAt = (u) => (u.t_end != null ? u.t_end : u.t);
+  function videoReset(seekT) {
+    send({ type: 'reset' });
+    video.next = 0; video.lastT = seekT || 0;
+    $('hero-sub').textContent = video.call ? video.call.title : 'video call';
+    if (seekT > 0) videoTick(seekT); // catch up silently to the new position
+  }
+  function videoTick(now) {
+    const utts = video.call.utterances;
+    while (video.next < utts.length && fireAt(utts[video.next]) <= now) {
+      const u = utts[video.next++];
+      send({ type: 'utterance', speaker: u.speaker, text: u.text, t: u.t });
+    }
+    $('video-progress').textContent = `${video.next} / ${utts.length} utterances · ${fmt(now)}`;
+  }
+  const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+  function syncTo(now) {
+    if (now < video.lastT - 1.5) { videoReset(now); return; } // scrubbed backwards
+    video.lastT = now;
+    videoTick(now);
+  }
+  function startVideoLoop() {
+    stopVideoLoop();
+    video.timer = setInterval(() => {
+      if (!video.player || !video.player.getCurrentTime) return;
+      syncTo(video.player.getCurrentTime());
+    }, 200);
+  }
+  function stopVideoLoop() { if (video.timer) clearInterval(video.timer); video.timer = null; }
+  $('btn-video-load').addEventListener('click', async () => {
+    const id = $('video-select').value; if (!id) return;
+    const call = await (await fetch('/api/calls/' + id)).json();
+    if (!call.video || !call.video.youtube_id) { toast('This call has no video attached.'); return; }
+    video.call = call;
+    await loadYouTubeApi();
+    $('video-card').classList.add('on');
+    $('video-sub').textContent = `${call.title} · ${call.utterances.length} utterances · YouTube ${call.video.youtube_id}`;
+    if (video.player) { video.player.destroy(); video.player = null; }
+    $('yt-player').innerHTML = '';
+    videoReset(0);
+    video.player = new YT.Player('yt-player', {
+      videoId: call.video.youtube_id,
+      playerVars: { rel: 0, modestbranding: 1, playsinline: 1, start: call.video.start || 0 },
+      events: {
+        onReady: () => { $('btn-video-play').disabled = false; $('btn-video-restart').disabled = false; },
+        onStateChange: (e) => {
+          const playing = e.data === YT.PlayerState.PLAYING;
+          $('btn-video-play').textContent = playing ? '⏸ Pause' : '▶ Play';
+          if (playing) startVideoLoop();
+          else if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.BUFFERING) { stopVideoLoop(); syncTo(video.player.getCurrentTime()); }
+          else if (e.data === YT.PlayerState.ENDED) { stopVideoLoop(); videoTick(1e9); $('video-progress').textContent += ' · done'; }
+        },
+      },
+    });
+  });
+  $('btn-video-play').addEventListener('click', () => {
+    if (!video.player) return;
+    const st = video.player.getPlayerState();
+    if (st === YT.PlayerState.PLAYING) video.player.pauseVideo(); else video.player.playVideo();
+  });
+  $('btn-video-restart').addEventListener('click', () => {
+    if (!video.player) return;
+    stopVideoLoop(); videoReset(0); video.player.seekTo(video.call.video.start || 0, true); video.player.playVideo();
+  });
+
+  connect();
+})();
+</script>
+</body>
+</html>
