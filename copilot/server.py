@@ -68,6 +68,8 @@ async def calls() -> list[dict[str, Any]]:
 async def call(call_id: str) -> JSONResponse:
     try:
         return JSONResponse(load_call(call_id))
+    except ValueError as e:
+        return JSONResponse({"error": str(e)}, status_code=400)
     except FileNotFoundError as e:
         return JSONResponse({"error": str(e)}, status_code=404)
 
@@ -259,7 +261,7 @@ async def handle_message(conn: Connection, msg: dict[str, Any]) -> None:
         await conn.stop_replay()
         try:
             call = load_call(str(msg.get("call", "good")))
-        except FileNotFoundError as e:
+        except (FileNotFoundError, ValueError) as e:
             await conn.send({"type": "error", "message": str(e)})
             return
         session.reset()
